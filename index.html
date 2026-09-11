@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planning de Colles MPSI-2I - Semestre 1</title>
+    <!-- Tailwind CSS (CSS compilé) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+    <!-- html2canvas pour l'export PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-900 min-h-screen text-white p-4 md:p-8 flex flex-col items-center"
+  >
+    <div class="w-full max-w-5xl space-y-6">
+      <!-- Panneau de Contrôle -->
+      <div
+        class="bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-700 space-y-4"
+      >
+        <h1 class="text-2xl font-bold text-center text-white">
+          📅 Planning de Colles MPSI-2I — S1
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+              >Sélectionner un Groupe</label
+            >
+            <select
+              id="group-select"
+              onchange="renderView()"
+              class="w-full bg-gray-900 text-white rounded-xl p-3 outline-none border border-gray-700 focus:border-indigo-500 transition-colors"
+            >
+              <!-- Généré en JS 1 à 17 -->
+            </select>
+          </div>
+          <div id="week-selector-container">
+            <label
+              class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+              >Semaine spécifique</label
+            >
+            <select
+              id="week-select"
+              onchange="renderView()"
+              class="w-full bg-gray-900 text-white rounded-xl p-3 outline-none border border-gray-700 focus:border-indigo-500 transition-colors"
+            >
+              <!-- Généré en JS S1 à S17 -->
+            </select>
+          </div>
+        </div>
+
+        <p
+          id="group-members"
+          class="text-xs text-indigo-300 text-center italic min-h-[1rem] bg-indigo-950/40 py-2 rounded-lg border border-indigo-900/50"
+        ></p>
+
+        <!-- Navigation Onglets (Vue Semaine vs Vue Semestre) -->
+        <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-700">
+          <button
+            id="tab-week"
+            onclick="switchTab('week')"
+            class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow"
+          >
+            Vue Semaine
+          </button>
+          <button
+            id="tab-semester"
+            onclick="switchTab('semester')"
+            class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-400 hover:text-white transition-all"
+          >
+            Vue Semestre Complet (S1)
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== VUE SEMAINE ==================== -->
+      <div id="view-week" class="space-y-4">
+        <div
+          id="colle-card-week"
+          class="bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 rounded-3xl p-6 shadow-2xl border border-indigo-500/30 relative overflow-hidden"
+        >
+          <div
+            class="absolute top-0 right-0 -mr-12 -mt-12 w-40 h-40 rounded-full bg-indigo-500 opacity-10 blur-xl"
+          ></div>
+
+          <div class="relative z-10 space-y-4">
+            <div
+              class="flex justify-between items-start border-b border-indigo-500/30 pb-4"
+            >
+              <div>
+                <span
+                  id="card-week-title"
+                  class="text-xs font-bold text-indigo-300 uppercase tracking-widest"
+                  >Semaine 1</span
+                >
+                <h2
+                  id="card-group-title"
+                  class="text-2xl font-extrabold text-white"
+                >
+                  Groupe 5
+                </h2>
+              </div>
+              <span
+                id="card-date-title"
+                class="text-xs bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-full border border-indigo-400/30"
+                >14/09 - 19/09</span
+              >
+            </div>
+
+            <div id="colles-list-week" class="space-y-3">
+              <!-- Injecté par JS -->
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="downloadPNG('colle-card-week', 'Colle_Semaine')"
+          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Télécharger cette semaine (PNG)
+        </button>
+      </div>
+
+      <!-- ==================== VUE SEMESTRE COMPLET ==================== -->
+      <div id="view-semester" class="hidden space-y-4">
+        <!-- Zone imprimable/exportable -->
+        <div
+          id="full-semester-card"
+          class="bg-gray-950 p-6 rounded-3xl border border-gray-800 space-y-6"
+        >
+          <!-- Header de l'image exportée -->
+          <div
+            class="flex flex-col md:flex-row justify-between items-center border-b border-gray-800 pb-4 gap-2"
+          >
+            <div>
+              <h2
+                id="sem-group-title"
+                class="text-3xl font-extrabold text-indigo-400"
+              >
+                Planning S1 — Groupe 5
+              </h2>
+              <p id="sem-group-members" class="text-xs text-gray-400"></p>
+            </div>
+            <span
+              class="text-xs bg-gray-800 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700"
+              >MPSI-2I 2026-2027</span
+            >
+          </div>
+
+          <!-- Grille des 17 semaines -->
+          <div
+            id="semester-grid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            <!-- Cartes semaines injectées JS -->
+          </div>
+        </div>
+
+        <button
+          onclick="downloadPNG('full-semester-card', 'Planning_Complet_S1')"
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Télécharger TOUT le Semestre 1 (PNG HD)
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const groupsInfo = {
+        1: "DAMMAK Abdessalem - DEBORDE Rémi - RESTOUT Lucas (LV2)",
+        2: "BERTRAND--RAOULT Pierre-Antoine - GIRAUD Lucas - NICOLAS Ylann (LV2)",
+        3: "BONNET Alexis - CUVILLIER Nina (LV2)",
+        4: "LOOCK Lucas - PERALTA Adrien - THIESSET Noah",
+        5: "CARPENTIER Ethan - GENTY Théophile - MAGNIEZ Charles",
+        6: "ARFAOUI Ziyad - CURTET Melchior - DUSART Jules",
+        7: "DELPECH--BRUXELLE Gwenaël - MELEROWICZ Théophile",
+        8: "HELBECQUE Laëna - JULIARD Sahel - LEPLUS Hugo",
+        9: "BACLET-MORET Klem - NOLEVAUX Charles - PETIT Clément (LV2)",
+        10: "CLOET Cassandre - LEHOUCQ Antoine - SUEUR Zélie (LV2)",
+        11: "DEVISME Noah - DURAND-TODOROV Vadim - STACHERA Aloïs (LV2)",
+        12: "ABBAR Sofiane - GRIMAULT Léo - TIERCELIN Thomas (LV2)",
+        13: "BECUWE Charlène - ER-ROUANE Lina - LALLART Blandine",
+        14: "AJALA Sarah - DROZDZ Héloïse - MORVAN Paul",
+        15: "BACART Yann - GODARD Antek - INNOCENTI Thomas",
+        16: "DEGARDIN Vincenzo - EL KANSOULI Côme - TACQUENIER Arthur",
+        17: "DESOMBRE Jules - MACHNITZKE Marceau - RAKOTOARINIVO Fitahiana",
+      };
+
+      const weeksDates = {
+        1: "14/09-19/09",
+        2: "21/09-26/09",
+        3: "28/09-03/10",
+        4: "05/10-10/10",
+        5: "12/10-17/10",
+        6: "02/11-07/11",
+        7: "09/11-14/11",
+        8: "16/11-21/11",
+        9: "23/11-28/11",
+        10: "30/11-05/12",
+        11: "07/12-12/12",
+        12: "14/12-19/12",
+        13: "04/01-09/01",
+        14: "11/01-16/01",
+        15: "18/01-23/01",
+        16: "25/01-30/01",
+        17: "01/02-06/02",
+      };
+
+      const scheduleRaw = [
+        // Français
+        {
+          sub: "Français",
+          prof: "M. SERRANO",
+          slot: "Mercredi 16h",
+          room: "",
+          weeks: [0, 0, 10, 11, 1, 2, 12, 15, 9, 3, 0, 0, 0, 0, 0, 0, 0],
+        },
+        {
+          sub: "Français",
+          prof: "M. SERRANO",
+          slot: "Jeudi 12h30",
+          room: "",
+          weeks: [0, 0, 4, 13, 5, 14, 6, 7, 8, 16, 17, 0, 0, 0, 0, 0, 0],
+        },
+
+        // Anglais
+        {
+          sub: "Anglais",
+          prof: "M. BATT",
+          slot: "Mardi 14h",
+          room: "",
+          weeks: [0, 15, 0, 17, 0, 5, 0, 7, 0, 15, 0, 13, 0, 5, 0, 7, 0],
+        },
+        {
+          sub: "Anglais",
+          prof: "M. LASSERRE",
+          slot: "Mardi 14h",
+          room: "",
+          weeks: [6, 7, 4, 5, 14, 13, 16, 15, 14, 17, 6, 7, 16, 13, 4, 5, 8],
+        },
+        {
+          sub: "Anglais",
+          prof: "M. LASSERRE",
+          slot: "Mercredi 15h",
+          room: "",
+          weeks: [12, 17, 2, 3, 10, 9, 8, 1, 2, 11, 4, 3, 12, 9, 10, 11, 12],
+        },
+        {
+          sub: "Anglais",
+          prof: "M. WORSTEAD",
+          slot: "Mercredi 17h",
+          room: "",
+          weeks: [16, 9, 12, 15, 4, 3, 6, 13, 10, 5, 2, 11, 14, 7, 8, 1, 16],
+        },
+        {
+          sub: "Anglais",
+          prof: "M. WORSTEAD",
+          slot: "Mercredi 18h",
+          room: "",
+          weeks: [8, 1, 16, 11, 6, 7, 12, 17, 4, 9, 8, 5, 2, 15, 14, 3, 6],
+        },
+        {
+          sub: "Anglais",
+          prof: "Mme GUILBERT-DECOOL",
+          slot: "Lundi 18h",
+          room: "",
+          weeks: [14, 13, 10, 1, 8, 11, 2, 9, 12, 3, 16, 1, 10, 17, 6, 15, 2],
+        },
+        {
+          sub: "Anglais",
+          prof: "Mme MARIÉ",
+          slot: "Mercredi 15h",
+          room: "",
+          weeks: [4, 3, 8, 9, 12, 17, 10, 5, 16, 7, 10, 9, 8, 3, 12, 17, 4],
+        },
+        {
+          sub: "Anglais",
+          prof: "Mme MARIÉ",
+          slot: "Mercredi 16h",
+          room: "",
+          weeks: [2, 5, 14, 13, 2, 15, 14, 3, 6, 1, 12, 15, 6, 1, 16, 9, 14],
+        },
+        {
+          sub: "Anglais",
+          prof: "Mme MARIÉ",
+          slot: "Mercredi 17h",
+          room: "",
+          weeks: [10, 11, 6, 7, 16, 1, 4, 11, 8, 13, 14, 17, 4, 11, 2, 13, 10],
+        },
+
+        // Mathématiques
+        {
+          sub: "Maths (Colle)",
+          prof: "M. BOSCH",
+          slot: "Lundi 16h30",
+          room: "28",
+          weeks: [0, 10, 11, 12, 0, 13, 14, 15, 0, 16, 17, 0, 0, 0, 0, 0, 0],
+        },
+        {
+          sub: "Maths (TD)",
+          prof: "M. BOSCH",
+          slot: "Lundi 16h30",
+          room: "28",
+          weeks: [9, 2, 3, 4, 1, 6, 7, 8, 5, 2, 0, 0, 9, 0, 0, 0, 1],
+        },
+        {
+          sub: "Maths (TD)",
+          prof: "M. BOSCH",
+          slot: "Lundi 16h30",
+          room: "28",
+          weeks: [5, 6, 7, 8, 9, 2, 3, 4, 1, 0, 7, 8, 5, 6, 3, 4, 9],
+        },
+        {
+          sub: "Maths (TD)",
+          prof: "M. BOSCH",
+          slot: "Lundi 16h30",
+          room: "28",
+          weeks: [1, 0, 0, 0, 5, 0, 0, 0, 9, 6, 3, 4, 1, 2, 7, 8, 5],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "M. AUFORT",
+          slot: "Jeudi 14h",
+          room: "",
+          weeks: [12, 1, 9, 10, 2, 3, 17, 12, 16, 11, 10, 15, 14, 3, 5, 2, 6],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "M. DAUNIZEAU",
+          slot: "Jeudi 14h",
+          room: "",
+          weeks: [16, 8, 12, 2, 11, 4, 10, 1, 3, 14, 9, 17, 2, 15, 12, 1, 13],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "M. DEGAILLE",
+          slot: "Mardi 14h",
+          room: "",
+          weeks: [13, 14, 15, 6, 16, 8, 5, 17, 7, 13, 15, 6, 4, 16, 8, 14, 7],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "M. PIORUN",
+          slot: "Jeudi 13h",
+          room: "",
+          weeks: [8, 17, 16, 7, 6, 15, 13, 5, 14, 4, 8, 7, 0, 13, 16, 17, 0],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "M. RENAUT",
+          slot: "Jeudi 16h",
+          room: "",
+          weeks: [4, 3, 1, 5, 10, 7, 16, 2, 6, 10, 4, 2, 12, 17, 14, 5, 16],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "M. RENAUT",
+          slot: "Jeudi 17h",
+          room: "",
+          weeks: [
+            17, 11, 14, 13, 12, 9, 15, 11, 8, 1, 13, 11, 3, 9, 10, 11, 15,
+          ],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme CANTINEAU",
+          slot: "Jeudi 16h",
+          room: "",
+          weeks: [3, 16, 8, 9, 13, 17, 1, 10, 4, 9, 16, 14, 13, 7, 6, 3, 11],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme CANTINEAU",
+          slot: "Jeudi 17h",
+          room: "",
+          weeks: [15, 5, 2, 14, 7, 12, 6, 3, 11, 15, 2, 12, 17, 10, 1, 12, 4],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme CANTINEAU",
+          slot: "Jeudi 18h",
+          room: "",
+          weeks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 8, 11, 2, 9, 10],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme JOLY",
+          slot: "Mercredi 17h",
+          room: "",
+          weeks: [7, 13, 4, 1, 17, 11, 9, 14, 17, 12, 6, 10, 11, 4, 15, 7, 3],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme JOLY",
+          slot: "Mercredi 18h",
+          room: "",
+          weeks: [14, 15, 10, 16, 3, 5, 2, 7, 15, 8, 1, 13, 16, 5, 9, 6, 17],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme MANIATIS",
+          slot: "Jeudi 17h",
+          room: "",
+          weeks: [2, 12, 6, 3, 4, 14, 12, 13, 10, 5, 11, 9, 6, 14, 17, 15, 8],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme MANIATIS",
+          slot: "Jeudi 18h",
+          room: "",
+          weeks: [10, 9, 17, 11, 15, 1, 8, 16, 2, 7, 12, 3, 10, 1, 11, 13, 12],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme MESTRE",
+          slot: "Mercredi 18h",
+          room: "",
+          weeks: [11, 4, 13, 17, 14, 10, 11, 9, 12, 3, 5, 1, 7, 12, 13, 10, 2],
+        },
+        {
+          sub: "Mathématiques",
+          prof: "Mme MESTRE",
+          slot: "Jeudi 13h",
+          room: "",
+          weeks: [6, 7, 5, 15, 8, 16, 4, 6, 13, 17, 14, 16, 15, 8, 4, 16, 14],
+        },
+
+        // Physique
+        {
+          sub: "Physique",
+          prof: "M. BOREL",
+          slot: "Mercredi 16h",
+          room: "30",
+          weeks: [1, 8, 9, 6, 5, 14, 15, 12, 13, 2, 17, 4, 3, 10, 11, 16, 1],
+        },
+        {
+          sub: "Physique",
+          prof: "M. CHELERS",
+          slot: "Jeudi 18h",
+          room: "",
+          weeks: [7, 10, 3, 4, 1, 2, 9, 14, 17, 16, 5, 8, 11, 12, 15, 6, 3],
+        },
+        {
+          sub: "Physique",
+          prof: "M. LAURETTE",
+          slot: "Mercredi 16h",
+          room: "",
+          weeks: [5, 6, 11, 2, 7, 12, 1, 16, 3, 4, 9, 14, 13, 8, 17, 12, 15],
+        },
+        {
+          sub: "Physique",
+          prof: "M. LE DOUR",
+          slot: "Mercredi 15h",
+          room: "",
+          weeks: [9, 12, 17, 8, 13, 4, 3, 6, 5, 10, 11, 16, 1, 14, 7, 2, 9],
+        },
+        {
+          sub: "Physique",
+          prof: "M. LEFEBVRE",
+          slot: "Mardi 14h",
+          room: "T6",
+          weeks: [15, 0, 5, 0, 15, 0, 17, 0, 15, 0, 7, 0, 17, 0, 5, 0, 5],
+        },
+        {
+          sub: "Physique",
+          prof: "M. LEFEBVRE",
+          slot: "Mercredi 15h",
+          room: "225",
+          weeks: [3, 2, 1, 14, 9, 6, 7, 10, 1, 6, 3, 2, 15, 6, 1, 8, 11],
+        },
+        {
+          sub: "Physique",
+          prof: "M. LEFEBVRE",
+          slot: "Mercredi 16h",
+          room: "225",
+          weeks: [17, 16, 7, 10, 11, 16, 13, 2, 11, 14, 13, 12, 9, 2, 3, 4, 13],
+        },
+        {
+          sub: "Physique",
+          prof: "M. LEFEBVRE",
+          slot: "Jeudi 16h",
+          room: "",
+          weeks: [11, 4, 13, 12, 3, 8, 5, 4, 9, 8, 1, 10, 7, 16, 9, 14, 17],
+        },
+        {
+          sub: "Physique",
+          prof: "Mme RIBAULT",
+          slot: "Jeudi 12h",
+          room: "",
+          weeks: [13, 14, 15, 16, 17, 10, 11, 8, 7, 12, 15, 6, 5, 4, 13, 10, 7],
+        },
+      ];
+
+      let currentTab = "week";
+
+      // Initialisation des options
+      const groupSelect = document.getElementById("group-select");
+      const weekSelect = document.getElementById("week-select");
+
+      for (let i = 1; i <= 17; i++) {
+        groupSelect.innerHTML += `<option value="${i}">Groupe ${i}</option>`;
+        weekSelect.innerHTML += `<option value="${i}">Semaine ${i} (${weeksDates[i]})</option>`;
+      }
+      groupSelect.value = "5"; // Par défaut
+
+      function switchTab(tab) {
+        currentTab = tab;
+        const btnWeek = document.getElementById("tab-week");
+        const btnSem = document.getElementById("tab-semester");
+        const viewWeek = document.getElementById("view-week");
+        const viewSem = document.getElementById("view-semester");
+        const weekContainer = document.getElementById(
+          "week-selector-container",
+        );
+
+        if (tab === "week") {
+          btnWeek.className =
+            "flex-1 py-2 text-sm font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow";
+          btnSem.className =
+            "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-400 hover:text-white transition-all";
+          viewWeek.classList.remove("hidden");
+          viewSem.classList.add("hidden");
+          weekContainer.classList.remove("opacity-40", "pointer-events-none");
+        } else {
+          btnSem.className =
+            "flex-1 py-2 text-sm font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow";
+          btnWeek.className =
+            "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-400 hover:text-white transition-all";
+          viewSem.classList.remove("hidden");
+          viewWeek.classList.add("hidden");
+          weekContainer.classList.add("opacity-40", "pointer-events-none");
+        }
+        renderView();
+      }
+
+      function renderView() {
+        const group = parseInt(groupSelect.value);
+        const week = parseInt(weekSelect.value);
+
+        // Membres
+        const membersText = groupsInfo[group] || "";
+        document.getElementById("group-members").innerText = membersText;
+
+        if (currentTab === "week") {
+          // Rendu de la vue par semaine
+          document.getElementById("card-group-title").innerText =
+            `Groupe ${group}`;
+          document.getElementById("card-week-title").innerText =
+            `Semaine ${week}`;
+          document.getElementById("card-date-title").innerText =
+            weeksDates[week];
+
+          const currentWeekColles = scheduleRaw.filter(
+            (item) => item.weeks[week - 1] === group,
+          );
+          const collesListWeek = document.getElementById("colles-list-week");
+          collesListWeek.innerHTML = "";
+
+          if (currentWeekColles.length === 0) {
+            collesListWeek.innerHTML = `<p class="text-sm text-indigo-200/60 italic text-center py-6">Pas de colle cette semaine ! 🎉</p>`;
+          } else {
+            currentWeekColles.forEach((colle) => {
+              collesListWeek.innerHTML += `
+                            <div class="bg-black/20 backdrop-blur border border-white/10 rounded-xl p-3 flex flex-col justify-between gap-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-300">${colle.sub}</span>
+                                    <span class="text-xs font-semibold text-white bg-indigo-500/30 px-2 py-0.5 rounded">${colle.slot}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm pt-1">
+                                    <span class="font-bold text-white">${colle.prof}</span>
+                                    <span class="text-xs text-gray-300">${colle.room ? "Salle " + colle.room : ""}</span>
+                                </div>
+                            </div>
+                        `;
+            });
+          }
+        } else {
+          // Rendu de la vue semestre complet
+          document.getElementById("sem-group-title").innerText =
+            `Planning S1 — Groupe ${group}`;
+          document.getElementById("sem-group-members").innerText = membersText;
+
+          const semesterGrid = document.getElementById("semester-grid");
+          semesterGrid.innerHTML = "";
+
+          for (let w = 1; w <= 17; w++) {
+            const collesOfW = scheduleRaw.filter(
+              (item) => item.weeks[w - 1] === group,
+            );
+
+            let collesHTML = "";
+            if (collesOfW.length === 0) {
+              collesHTML = `<p class="text-xs text-gray-500 italic py-1">Repos / Pas de colle</p>`;
+            } else {
+              collesOfW.forEach((c) => {
+                collesHTML += `
+                                <div class="bg-gray-900/80 p-2 rounded-lg border border-gray-800 text-xs flex justify-between items-center">
+                                    <div>
+                                        <div class="font-bold text-indigo-300">${c.sub}</div>
+                                        <div class="text-gray-400 text-[11px]">${c.prof} ${c.room ? "(" + c.room + ")" : ""}</div>
+                                    </div>
+                                    <span class="bg-indigo-950 text-indigo-200 px-2 py-1 rounded text-[10px] font-mono border border-indigo-800">${c.slot}</span>
+                                </div>
+                            `;
+              });
+            }
+
+            semesterGrid.innerHTML += `
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800/80 space-y-2">
+                            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+                                <span class="font-bold text-sm text-white">Semaine ${w}</span>
+                                <span class="text-[11px] text-gray-400 font-mono">${weeksDates[w]}</span>
+                            </div>
+                            <div class="space-y-1.5">
+                                ${collesHTML}
+                            </div>
+                        </div>
+                    `;
+
+            // Intervalles Vacances
+            if (w === 5) {
+              semesterGrid.innerHTML += `
+                            <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-amber-950/30 border border-amber-800/40 rounded-xl p-3 text-center text-amber-300 text-xs font-semibold">
+                                🍂 Vacances de la Toussaint (19/10 - 31/10)
+                            </div>
+                        `;
+            } else if (w === 12) {
+              semesterGrid.innerHTML += `
+                            <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-blue-950/30 border border-blue-800/40 rounded-xl p-3 text-center text-blue-300 text-xs font-semibold">
+                                🎄 Vacances de Noël (21/12 - 02/01)
+                            </div>
+                        `;
+            }
+          }
+        }
+      }
+
+      function downloadPNG(elementId, filenamePrefix) {
+        const element = document.getElementById(elementId);
+        const group = groupSelect.value;
+        const week = weekSelect.value;
+
+        html2canvas(element, {
+          backgroundColor: "#030712", // Fond sombre propre pour le rendu PNG
+          scale: 2,
+        }).then((canvas) => {
+          const link = document.createElement("a");
+          link.download = `${filenamePrefix}_G${group}_${filenamePrefix === "Colle_Semaine" ? "S" + week : "S1_Complet"}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      }
+
+      // Lancement initial
+      renderView();
+    </script>
+  </body>
+</html>
+
